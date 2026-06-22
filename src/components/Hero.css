@@ -1,0 +1,204 @@
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: #fff;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 16, 0.55) 0%,
+    rgba(8, 8, 16, 0.35) 40%,
+    rgba(8, 8, 16, 0.75) 80%,
+    rgba(8, 8, 16, 1) 100%
+  );
+  z-index: 1;
+}
+
+/* 导航 */
+.hero-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 28px 0;
+  transition: background 0.4s ease, padding 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.hero-nav.scrolled {
+  background: rgba(8, 8, 16, 0.85);
+  backdrop-filter: blur(16px);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #fff;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-links button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+  font-family: var(--font);
+  letter-spacing: 0.5px;
+}
+
+.nav-links button:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-contact {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 8px 20px !important;
+}
+
+.nav-contact:hover {
+  background: #3a66e8 !important;
+}
+
+/* 主内容 */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-top: 80px;
+}
+
+.hero-label {
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: clamp(4rem, 8vw, 9rem);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 24px;
+  letter-spacing: -2px;
+}
+
+.hero-title-accent {
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.55);
+  font-weight: 300;
+  margin-bottom: 48px;
+  letter-spacing: 1px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.2s, transform 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  background: #3a66e8;
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.5);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* 滚动提示 */
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.hero-scroll-hint span {
+  display: block;
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4));
+  margin: 0 auto;
+  animation: scrollLine 2s ease-in-out infinite;
+}
+
+@keyframes scrollLine {
+  0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+  100% { opacity: 0; transform: scaleY(1); transform-origin: bottom; }
+}

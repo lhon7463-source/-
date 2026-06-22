@@ -1,0 +1,94 @@
+.about {
+  padding: 140px 0;
+  background: var(--bg);
+}
+
+.about-inner {
+  display: flex;
+  align-items: center;
+  gap: 100px;
+}
+
+.about-image-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.about-avatar {
+  width: 360px;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: grayscale(10%);
+}
+
+.about-image-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), transparent 60%);
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.about-content {
+  flex: 1;
+}
+
+.about-tag {
+  font-size: 0.75rem;
+  letter-spacing: 5px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.about-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.about-role {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+}
+
+.about-bio {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: rgba(232, 232, 240, 0.75);
+  max-width: 560px;
+  margin-bottom: 48px;
+}
+
+.about-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.contact-item:hover {
+  color: var(--accent);
+}
+
+.contact-icon {
+  font-size: 1rem;
+  color: var(--accent);
+}
