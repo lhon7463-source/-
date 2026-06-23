@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
+import PixelCard from './PixelCard'
 import './Projects.css'
 
 const projects = [
@@ -39,6 +41,7 @@ const projects = [
     type: 'images',
     tag: 'AI 壁纸',
     images: [
+      '/works/%E5%B0%8F%E7%BA%A2%E4%B9%A6%E5%8E%9F%E5%88%9BAIGC%E5%A3%81%E7%BA%B8%E8%B4%A6%E5%8F%B7/%E5%8E%9F%E5%88%9BAI%E5%A3%81%E7%BA%B8%E4%BD%9C%E5%93%81/%E9%A6%96%E5%9B%BE_%E4%B8%8A%E4%BC%A0.jpg',
       '/works/%E5%B0%8F%E7%BA%A2%E4%B9%A6%E5%8E%9F%E5%88%9BAIGC%E5%A3%81%E7%BA%B8%E8%B4%A6%E5%8F%B7/%E5%8E%9F%E5%88%9BAI%E5%A3%81%E7%BA%B8%E4%BD%9C%E5%93%81/%23018.png',
       '/works/%E5%B0%8F%E7%BA%A2%E4%B9%A6%E5%8E%9F%E5%88%9BAIGC%E5%A3%81%E7%BA%B8%E8%B4%A6%E5%8F%B7/%E5%8E%9F%E5%88%9BAI%E5%A3%81%E7%BA%B8%E4%BD%9C%E5%93%81/%23019.png',
       '/works/%E5%B0%8F%E7%BA%A2%E4%B9%A6%E5%8E%9F%E5%88%9BAIGC%E5%A3%81%E7%BA%B8%E8%B4%A6%E5%8F%B7/%E5%8E%9F%E5%88%9BAI%E5%A3%81%E7%BA%B8%E4%BD%9C%E5%93%81/%23020.png',
@@ -93,26 +96,94 @@ const projects = [
 
 function ImageGallery({ images }) {
   const [index, setIndex] = useState(0)
-  const prev = () => setIndex(i => (i === 0 ? images.length - 1 : i - 1))
-  const next = () => setIndex(i => (i === images.length - 1 ? 0 : i + 1))
+  const [lightbox, setLightbox] = useState(false)
+  const close = useCallback(() => setLightbox(false), [])
+  const prev = useCallback((e) => { e?.stopPropagation(); setIndex(i => (i === 0 ? images.length - 1 : i - 1)) }, [images.length])
+  const next = useCallback((e) => { e?.stopPropagation(); setIndex(i => (i === images.length - 1 ? 0 : i + 1)) }, [images.length])
+
+  // Preload all images into browser cache when lightbox opens
+  useEffect(() => {
+    if (!lightbox) return
+    images.forEach(src => {
+      const img = new window.Image()
+      img.src = src
+    })
+  }, [lightbox, images])
+
+  useEffect(() => {
+    if (!lightbox) return
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => {
+      if (e.key === 'Escape') close()
+      else if (e.key === 'ArrowLeft') prev(e)
+      else if (e.key === 'ArrowRight') next(e)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [lightbox, close, prev, next])
+
   return (
-    <div className="gallery">
-      <img src={images[index]} alt="" className="gallery-img" />
-      <div className="gallery-controls">
-        <button onClick={prev}>‹</button>
-        <span>{index + 1} / {images.length}</span>
-        <button onClick={next}>›</button>
+    <>
+      <div className="gallery">
+        <img
+          src={images[index]} alt="" className="gallery-img"
+          onClick={(e) => { e.stopPropagation(); setLightbox(true) }}
+          style={{ cursor: 'pointer' }}
+        />
+        <div className="gallery-controls">
+          <button onClick={prev}>‹</button>
+          <span>{index + 1} / {images.length}</span>
+          <button onClick={next}>›</button>
+        </div>
       </div>
-    </div>
+      {lightbox && createPortal(
+        <div className="image-modal" onClick={close} onMouseDown={(e) => e.stopPropagation()}>
+          <button className="image-modal-close" onClick={(e) => { e.stopPropagation(); close() }}>×</button>
+          <button className="image-modal-nav image-modal-nav--prev" onClick={(e) => { e.stopPropagation(); prev(e) }}>‹</button>
+          <button className="image-modal-nav image-modal-nav--next" onClick={(e) => { e.stopPropagation(); next(e) }}>›</button>
+          <div className="image-modal-stage" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+            {images.map((src, i) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                className="image-modal-img"
+                draggable={false}
+                style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
+              />
+            ))}
+          </div>
+          <p className="image-modal-title" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>{index + 1} / {images.length}</p>
+        </div>,
+        document.body
+      )}
+    </>
   )
 }
 
 function StoryboardStrip({ images }) {
   if (!images || images.length === 0) return null
+  const [load, setLoad] = useState(false)
+  const stripRef = useRef(null)
+
+  useEffect(() => {
+    const el = stripRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setLoad(true); io.disconnect() } },
+      { rootMargin: '200px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <div className="storyboard-strip">
+    <div ref={stripRef} className="storyboard-strip">
       {images.map((src, i) => (
-        <img key={i} src={src} alt={`分镜${i + 1}`} className="storyboard-thumb" />
+        load ? <img key={i} src={src} alt={`分镜${i + 1}`} className="storyboard-thumb" loading="lazy" /> : <div key={i} className="storyboard-thumb storyboard-thumb--placeholder" />
       ))}
     </div>
   )
@@ -139,8 +210,11 @@ function VideoModal({ project, onClose }) {
           poster={project.poster}
           className="video-modal-player"
           controls
+          controlsList="nodownload noplaybackrate noremoteplayback"
+          disablePictureInPicture
           autoPlay
           playsInline
+          onContextMenu={(e) => e.preventDefault()}
         />
         <p className="video-modal-title">{project.title}</p>
       </div>
@@ -149,7 +223,20 @@ function VideoModal({ project, onClose }) {
 }
 
 function ProjectCard({ project, onOpen }) {
+  const cardRef = useRef(null)
   const videoRef = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect() } },
+      { rootMargin: '200px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   const handleMouseEnter = () => {
     if (videoRef.current) videoRef.current.play().catch(() => {})
@@ -163,39 +250,54 @@ function ProjectCard({ project, onOpen }) {
 
   if (project.type === 'images') {
     return (
-      <div className="project-card">
-        <div className="card-tag">{project.tag}</div>
-        <h3 className="card-title">{project.title}</h3>
-        <ImageGallery images={project.images} />
+      <div ref={cardRef}>
+        <PixelCard className="project-card" colors="#ffffff,#cccccc">
+          <div
+            style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 16, textAlign: 'left', alignItems: 'flex-start', width: '100%' }}
+          >
+            <div className="card-tag">{project.tag}</div>
+            <h3 className="card-title" style={{ textAlign: 'left' }}>{project.title}</h3>
+            <div className="card-video-wrap">
+              <ImageGallery images={project.images} />
+            </div>
+            <div className="storyboard-strip" aria-hidden="true" />
+          </div>
+        </PixelCard>
       </div>
     )
   }
 
   return (
-    <div
-      className="project-card"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => onOpen(project)}
-    >
-      <div className="card-tag">{project.tag}</div>
-      <h3 className="card-title">{project.title}</h3>
-      <div className="card-video-wrap">
-        <video
-          ref={videoRef}
-          src={project.video}
-          poster={project.poster}
-          className="card-video"
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
-        <div className="card-video-overlay">
-          <span className="play-icon">▶</span>
+    <div ref={cardRef}>
+      <PixelCard className="project-card" colors="#ffffff,#cccccc">
+        <div
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => onOpen(project)}
+          style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 16 }}
+        >
+          <div className="card-tag">{project.tag}</div>
+          <h3 className="card-title">{project.title}</h3>
+          <div className="card-video-wrap">
+            {inView && (
+              <video
+                ref={videoRef}
+                src={project.video}
+                poster={project.poster}
+                className="card-video"
+                muted
+                loop
+                playsInline
+                preload="none"
+              />
+            )}
+            <div className="card-video-overlay">
+              <span className="play-icon">▶</span>
+            </div>
+          </div>
+          <StoryboardStrip images={project.storyboards} />
         </div>
-      </div>
-      <StoryboardStrip images={project.storyboards} />
+      </PixelCard>
     </div>
   )
 }

@@ -1,23 +1,25 @@
 .footer {
   position: relative;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: var(--bg);
+  padding: var(--space-32) 0;
 }
 
 .footer-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(79, 124, 255, 0.08) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .footer-inner {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-content);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -26,58 +28,64 @@
 }
 
 .footer-tag {
-  font-size: 0.75rem;
-  letter-spacing: 5px;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 28px;
+  /* 全局 .section-tag 接管 */
 }
 
 .footer-title {
-  font-size: clamp(2.5rem, 5vw, 5rem);
-  font-weight: 900;
-  line-height: 1.15;
-  margin-bottom: 72px;
-  letter-spacing: -2px;
-  color: var(--text);
+  font-size: var(--fs-4xl);
+  font-weight: var(--fw-bold);
+  line-height: 1.1;
+  margin-bottom: var(--space-16);
+  letter-spacing: -0.03em;
+  color: var(--text-strong);
+  max-width: 900px;
 }
 
 .footer-title span {
-  color: var(--accent);
+  color: var(--text-strong);
+  font-style: italic;
+  font-weight: var(--fw-regular);
 }
 
 .footer-contacts {
   display: flex;
   align-items: center;
-  gap: 48px;
-  margin-bottom: 80px;
+  gap: var(--space-12);
+  margin-bottom: var(--space-20);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .footer-link {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   text-align: center;
-  transition: color 0.2s;
+  transition: transform var(--dur-base) var(--ease-out);
   cursor: pointer;
 }
 
-.footer-link:hover .footer-link-value {
-  color: var(--accent);
+.footer-link:hover {
+  transform: translateY(-3px);
 }
 
 .footer-link-label {
-  font-size: 0.7rem;
-  letter-spacing: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-widest);
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .footer-link-value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text);
-  transition: color 0.2s;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--text-strong);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.footer-link:hover .footer-link-value {
+  color: var(--accent);
 }
 
 .footer-divider {
@@ -87,7 +95,9 @@
 }
 
 .footer-copy {
-  font-size: 0.8rem;
-  color: rgba(136, 136, 153, 0.5);
-  letter-spacing: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
+  opacity: 0.6;
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import GlitchText from './GlitchText'
 import './About.css'
 
 export default function About() {
@@ -6,17 +7,19 @@ export default function About() {
     <section id="about" className="about">
       <div className="container about-inner">
         <div className="about-image-wrap">
-          <img
-            src="/works/%E6%95%91%E5%91%BD%EF%BC%81%E7%8E%89%E7%B1%B3%E6%98%9F%E5%90%9B%E7%9A%84%E5%91%A8%E6%9C%AB%E4%B9%9F%E5%A4%AA%E5%83%8F%E6%88%91%E6%9C%AC%E4%BA%BA%E4%BA%86/%E7%8E%89%E7%B1%B3%E6%98%9F%E5%90%9B%E4%B8%89%E8%A7%86%E5%9B%BE.jpg"
-            alt="陆鸿成"
-            className="about-avatar"
-            onError={e => { e.target.style.display = 'none' }}
-          />
+          <GlitchText className="glitch-img" enableShadows={false}>
+            <img
+              src="/avatar.png"
+              alt="陆鸿成"
+              className="about-avatar"
+              onError={e => { e.target.style.display = 'none' }}
+            />
+          </GlitchText>
           <div className="about-image-glow" />
         </div>
 
         <div className="about-content">
-          <p className="about-tag">ABOUT ME</p>
+          <p className="section-tag">ABOUT ME</p>
           <h2 className="about-title">陆鸿成</h2>
           <p className="about-role">AI 设计师 · AIGC 内容创作者</p>
           <p className="about-bio">

@@ -6,7 +6,7 @@ export default function Footer() {
     <footer id="contact" className="footer">
       <div className="footer-bg" />
       <div className="container footer-inner">
-        <p className="footer-tag">GET IN TOUCH</p>
+        <p className="section-tag">GET IN TOUCH</p>
         <h2 className="footer-title">
           有项目想聊？<br />
           <span>随时联系我。</span>
@@ -24,7 +24,7 @@ export default function Footer() {
           <div className="footer-divider" />
           <div className="footer-link">
             <span className="footer-link-label">小红书</span>
-            <span className="footer-link-value">@陆鸿成</span>
+            <span className="footer-link-value">6384893101</span>
           </div>
         </div>
         <p className="footer-copy">© 2026 陆鸿成 · AI Designer</p>
