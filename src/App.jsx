@@ -16,10 +16,10 @@ export default function App() {
           top: 0,
           left: 0,
           right: 0,
-          height: 200,
+          height: '100vh',
           zIndex: 1,
           pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, rgba(8, 8, 16, 1) 0%, rgba(8, 8, 16, 0) 100%)',
+          background: 'linear-gradient(to bottom, rgba(8, 8, 16, 0.95) 0%, rgba(8, 8, 16, 0.85) 40%, rgba(8, 8, 16, 0.4) 75%, rgba(8, 8, 16, 0) 100%)',
         }} />
         <div style={{
           position: 'absolute',
@@ -28,28 +28,28 @@ export default function App() {
           pointerEvents: 'none',
         }}>
           <Grainient
-            color1="#5f5f5f"
-            color2="#08021a"
-            color3="#555c71"
+            color1="#8e8e8f"
+            color2="#09031e"
+            color3="#5e6578"
             timeSpeed={0.25}
-            colorBalance={0.04}
-            warpStrength={1.25}
-            warpFrequency={3.4}
-            warpSpeed={1.8}
+            colorBalance={-0.38}
+            warpStrength={1.0}
+            warpFrequency={3.5}
+            warpSpeed={0.4}
             warpAmplitude={50}
             blendAngle={-8}
             blendSoftness={0.05}
             rotationAmount={500}
-            noiseScale={1.25}
-            grainAmount={0.1}
-            grainScale={2}
+            noiseScale={2}
+            grainAmount={0.04}
+            grainScale={4}
             grainAnimated={false}
             contrast={1.5}
             gamma={1}
             saturation={1}
             centerX={0}
             centerY={0}
-            zoom={2.45}
+            zoom={0.9}
           />
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
