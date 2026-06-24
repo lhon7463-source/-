@@ -278,6 +278,13 @@
   .hero-nav {
     padding: var(--space-4) 0;
   }
+  .nav-inner {
+    gap: var(--space-2);
+  }
+  .container.nav-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
   .nav-logo {
     font-size: 1.1rem;
   }
