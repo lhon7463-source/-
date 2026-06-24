@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import GlitchText from './GlitchText'
 import Threads from './Threads'
-import MetallicPaint from './MetallicPaint'
-import { buildNameMaskDataURL } from './nameMask'
 import './Hero.css'
 
 const NAV_ITEMS = [
@@ -21,28 +19,28 @@ export default function Hero() {
   const stateRef = useRef({ scrolled, activeIndex })
   stateRef.current = { scrolled, activeIndex }
 
-  const onTick = useRef(() => {
-    const { scrolled: wasScrolled, activeIndex: wasActive } = stateRef.current
-    const y = window.scrollY
-    if (y > 40 !== wasScrolled) setScrolled(y > 40)
-
-    const ids = NAV_ITEMS.map(i => i.id)
-    const sections = ids.map(id => document.getElementById(id)).filter(Boolean)
-    const vh = window.innerHeight
-    let bestIdx = wasActive, bestRatio = -1
-    sections.forEach((sec, i) => {
-      if (!sec) return
-      const r = sec.getBoundingClientRect()
-      const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0))
-      const ratio = visible / Math.min(r.height, vh)
-      if (ratio > bestRatio) { bestRatio = ratio; bestIdx = i }
-    })
-    if (bestIdx !== wasActive) setActiveIndex(bestIdx)
-  })
-
   useEffect(() => {
     const lastScroll = { t: 0 }
     let raf = 0
+    // 缓存 sections 引用，避免每次 scroll 都 getElementById
+    const sections = NAV_ITEMS.map(i => document.getElementById(i.id))
+    const onTick = () => {
+      const { scrolled: wasScrolled, activeIndex: wasActive } = stateRef.current
+      const y = window.scrollY
+      if (y > 40 !== wasScrolled) setScrolled(y > 40)
+
+      const vh = window.innerHeight
+      let bestIdx = wasActive, bestRatio = -1
+      sections.forEach((sec, i) => {
+        if (!sec) return
+        const r = sec.getBoundingClientRect()
+        const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0))
+        const ratio = visible / Math.min(r.height, vh)
+        if (ratio > bestRatio) { bestRatio = ratio; bestIdx = i }
+      })
+      if (bestIdx !== wasActive) setActiveIndex(bestIdx)
+    }
+    onTick.current = onTick
     const onScroll = () => {
       const now = performance.now()
       if (now - lastScroll.t < 80) {

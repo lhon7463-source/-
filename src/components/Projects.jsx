@@ -136,14 +136,18 @@ function ImageGallery({ images }) {
   const prev = useCallback((e) => { e?.stopPropagation(); setIndex(i => (i === 0 ? images.length - 1 : i - 1)) }, [images.length])
   const next = useCallback((e) => { e?.stopPropagation(); setIndex(i => (i === images.length - 1 ? 0 : i + 1)) }, [images.length])
 
-  // Preload all images into browser cache when lightbox opens
+  // Only preload neighbors (±2) when lightbox opens — saves bandwidth
   useEffect(() => {
     if (!lightbox) return
-    images.forEach(src => {
+    const preload = (i) => {
       const img = new window.Image()
-      img.src = src
-    })
-  }, [lightbox, images])
+      img.src = images[i]
+    }
+    for (let d = -2; d <= 2; d++) {
+      const i = (index + d + images.length) % images.length
+      if (i !== index) preload(i)
+    }
+  }, [lightbox, index, images])
 
   useEffect(() => {
     if (!lightbox) return
@@ -180,16 +184,24 @@ function ImageGallery({ images }) {
           <button className="image-modal-nav image-modal-nav--prev" onClick={(e) => { e.stopPropagation(); prev(e) }}>‹</button>
           <button className="image-modal-nav image-modal-nav--next" onClick={(e) => { e.stopPropagation(); next(e) }}>›</button>
           <div className="image-modal-stage" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-            {images.map((src, i) => (
-              <img
-                key={src}
-                src={src}
-                alt=""
-                className="image-modal-img"
-                draggable={false}
-                style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
-              />
-            ))}
+            {images.map((src, i) => {
+              // 只渲染当前及 ±1 邻居（环形距离），避免一次性下载全部图片
+              const dist = Math.min(
+                Math.abs(i - index),
+                images.length - Math.abs(i - index)
+              )
+              if (dist > 1) return null
+              return (
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  className="image-modal-img"
+                  draggable={false}
+                  style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
+                />
+              )
+            })}
           </div>
           <p className="image-modal-title" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>{index + 1} / {images.length}</p>
         </div>,
@@ -235,6 +247,8 @@ function StoryboardStrip({ images }) {
             src={src}
             alt={`分镜${i + 1}`}
             className="storyboard-thumb"
+            loading="lazy"
+            decoding="async"
             onClick={(e) => { e.stopPropagation(); openLightbox(i) }}
             style={{ cursor: 'pointer' }}
           />
@@ -246,16 +260,24 @@ function StoryboardStrip({ images }) {
           <button className="image-modal-nav image-modal-nav--prev" onClick={(e) => { e.stopPropagation(); prev(e) }}>‹</button>
           <button className="image-modal-nav image-modal-nav--next" onClick={(e) => { e.stopPropagation(); next(e) }}>›</button>
           <div className="image-modal-stage" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-            {images.map((src, i) => (
-              <img
-                key={src}
-                src={src}
-                alt=""
-                className="image-modal-img"
-                draggable={false}
-                style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
-              />
-            ))}
+            {images.map((src, i) => {
+              // 只渲染当前及 ±1 邻居（环形距离），避免一次性下载全部图片
+              const dist = Math.min(
+                Math.abs(i - index),
+                images.length - Math.abs(i - index)
+              )
+              if (dist > 1) return null
+              return (
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  className="image-modal-img"
+                  draggable={false}
+                  style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
+                />
+              )
+            })}
           </div>
           <p className="image-modal-title" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>{index + 1} / {images.length}</p>
         </div>,
@@ -309,14 +331,17 @@ function ProjectCard({ project, onOpen }) {
     if (!el) return
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect() } },
-      { rootMargin: '200px' }
+      { rootMargin: '400px' }
     )
     io.observe(el)
     return () => io.disconnect()
   }, [])
 
   const handleMouseEnter = () => {
-    if (videoRef.current) videoRef.current.play().catch(() => {})
+    if (videoRef.current) {
+      // 移到 hover 才播放，避免 5 个 video 一起下载
+      videoRef.current.play().catch(() => {})
+    }
   }
   const handleMouseLeave = () => {
     if (videoRef.current) {
@@ -324,6 +349,10 @@ function ProjectCard({ project, onOpen }) {
       videoRef.current.currentTime = 0
     }
   }
+
+  // 标记用户偏好减弱动画 — 关掉视频预览以节省流量
+  const reduceMotion = typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   if (project.type === 'images') {
     return (
@@ -381,11 +410,11 @@ function ProjectCard({ project, onOpen }) {
                   src={project.video}
                   poster={project.poster}
                   className="card-video"
-                muted
-                loop
-                playsInline
-                preload="none"
-              />
+                  muted
+                  loop
+                  playsInline
+                  preload={inView ? 'metadata' : 'none'}
+                />
             )}
             <div className="card-video-overlay">
               <span className="play-icon">▶</span>

@@ -9,9 +9,11 @@ export default function About() {
         <div className="about-image-wrap">
           <GlitchText className="glitch-img" enableShadows={false}>
             <img
-              src="/image_00000.jpg"
+              src="/f30b8756.jpg"
               alt="陆鸿成"
               className="about-avatar"
+              loading="lazy"
+              decoding="async"
               onError={e => { e.target.style.display = 'none' }}
             />
           </GlitchText>

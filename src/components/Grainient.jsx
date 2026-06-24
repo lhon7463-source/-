@@ -152,11 +152,14 @@ export default function Grainient({
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+    // 移动端/弱设备降低画布密度，降低 GPU/CPU 占用
+    const isMobile = window.matchMedia?.('(max-width: 768px)').matches
+    const dprCap = isMobile ? 1 : 2
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, dprCap),
     })
     const gl = renderer.gl
     const canvas = gl.canvas
@@ -201,7 +204,8 @@ export default function Grainient({
     const setSize = () => {
       const rect = container.getBoundingClientRect()
       const w = Math.max(1, Math.floor(rect.width))
-      const h = Math.max(1, Math.floor(rect.height))
+      // 限制画布渲染高度为视口高度（13598px 长容器实际只渲染可见的一屏）
+      const h = Math.max(1, Math.floor(Math.min(rect.height, window.innerHeight * 2)))
       renderer.setSize(w, h)
       const res = program.uniforms.iResolution.value
       res[0] = gl.drawingBufferWidth
