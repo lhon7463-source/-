@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import About from './components/About'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
 import Footer from './components/Footer'
-import Grainient from './components/Grainient'
+
+// Grainient 是 ~1MB 的 OGL/WebGL bundle，延后到首屏绘制完再加载
+const Grainient = lazy(() => import('./components/Grainient'))
 
 export default function App() {
+  // 仅在 Hero 渲染完（约 200ms）后再挂 Grainient，避免抢占首屏
+  const [showBg, setShowBg] = useState(false)
+  useEffect(() => {
+    const id = window.setTimeout(() => setShowBg(true), 300)
+    return () => window.clearTimeout(id)
+  }, [])
+
   return (
     <>
       <Hero />
@@ -27,31 +36,35 @@ export default function App() {
           zIndex: 0,
           pointerEvents: 'none',
         }}>
-          <Grainient
-            color1="#8e8e8f"
-            color2="#09031e"
-            color3="#5e6578"
-            timeSpeed={0.25}
-            colorBalance={-0.38}
-            warpStrength={0.35}
-            warpFrequency={2.2}
-            warpSpeed={0.4}
-            warpAmplitude={80}
-            blendAngle={0}
-            blendSoftness={0.05}
-            rotationAmount={500}
-            noiseScale={2}
-            grainAmount={0.04}
-            grainScale={4}
-            grainAnimated={false}
-            contrast={1.5}
-            gamma={1}
-            saturation={1}
-            centerX={0}
-            centerY={0}
-            zoom={0.9}
-            randomBurst
-          />
+          {showBg && (
+            <Suspense fallback={null}>
+              <Grainient
+                color1="#8e8e8f"
+                color2="#09031e"
+                color3="#5e6578"
+                timeSpeed={0.25}
+                colorBalance={-0.38}
+                warpStrength={0.35}
+                warpFrequency={2.2}
+                warpSpeed={0.4}
+                warpAmplitude={80}
+                blendAngle={0}
+                blendSoftness={0.05}
+                rotationAmount={500}
+                noiseScale={2}
+                grainAmount={0.04}
+                grainScale={4}
+                grainAnimated={false}
+                contrast={1.5}
+                gamma={1}
+                saturation={1}
+                centerX={0}
+                centerY={0}
+                zoom={0.9}
+                randomBurst
+              />
+            </Suspense>
+          )}
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <About />

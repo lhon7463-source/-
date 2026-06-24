@@ -395,8 +395,76 @@
 }
 
 @media (max-width: 768px) {
+  .projects {
+    padding: var(--space-20) 0;
+  }
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
   .project-card {
+    max-width: 100%;
     height: auto;
-    min-height: 480px;
+    min-height: 0;
+    padding: var(--space-5);
+    gap: var(--space-4) !important;
+  }
+  .card-title {
+    font-size: 1.3rem !important;
+    min-height: 0;
+    -webkit-line-clamp: 3;
+  }
+  .card-tag {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+  }
+  .storyboard-strip {
+    min-height: 0;
+    gap: 6px;
+  }
+  .storyboard-thumb {
+    height: 60px;
+    min-width: 44px;
+  }
+  /* Lightbox 在移动端上下贴边显示 */
+  .image-modal-nav {
+    width: 44px;
+    height: 44px;
+    font-size: 1.6rem;
+  }
+  .image-modal-close {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+    top: var(--space-3);
+    right: var(--space-3);
+  }
+  /* 视频弹窗上下留更多空间 */
+  .video-modal {
+    padding: var(--space-4);
+  }
+  .video-modal-inner {
+    width: 100%;
+  }
+  .video-modal-title {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-grid {
+    gap: var(--space-8);
+  }
+  .project-card {
+    padding: var(--space-4);
+  }
+  .card-title {
+    font-size: 1.15rem !important;
+  }
+  .storyboard-thumb {
+    height: 52px;
   }
 }

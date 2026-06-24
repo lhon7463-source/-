@@ -108,3 +108,42 @@
   color: var(--accent);
   font-size: 0.95em;
 }
+
+/* ── 移动端 ── */
+@media (max-width: 768px) {
+  .about {
+    padding: var(--space-20) 0;
+  }
+  .about-inner {
+    flex-direction: column;
+    gap: var(--space-8);
+    text-align: center;
+  }
+  .about-image-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .about-avatar {
+    width: 220px;
+    height: 280px;
+  }
+  .about-content {
+    text-align: center;
+  }
+  .about-title {
+    font-size: var(--fs-2xl);
+  }
+  .about-bio {
+    max-width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .about-contacts {
+    align-items: center;
+  }
+  .contact-item {
+    font-size: 0.82rem;
+    padding: var(--space-2) var(--space-3);
+  }
+}

@@ -46,7 +46,6 @@ const projects = [
     tag: 'AI 壁纸',
     images: [
       '/f30b8756.jpg',
-      '/ai-works/xiaohongshu/original/cover.jpg',
       '/ai-works/xiaohongshu/original/wallpaper-20260507004321.png',
       '/ai-works/xiaohongshu/original/wallpaper-20260508171611.png',
       '/ai-works/xiaohongshu/original/wallpaper-20260511165938.png',
@@ -414,7 +413,7 @@ function ProjectCard({ project, onOpen }) {
                   muted
                   loop
                   playsInline
-                  preload={inView ? 'metadata' : 'none'}
+                  preload="none"
                 />
             )}
             <div className="card-video-overlay">
