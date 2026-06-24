@@ -10,7 +10,7 @@ export default function App() {
   return (
     <>
       <Hero />
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', width: '100%' }}>
         <div style={{
           position: 'absolute',
           top: 0,
@@ -37,7 +37,7 @@ export default function App() {
             warpFrequency={2.2}
             warpSpeed={0.4}
             warpAmplitude={80}
-            blendAngle={-8}
+            blendAngle={0}
             blendSoftness={0.05}
             rotationAmount={500}
             noiseScale={2}
