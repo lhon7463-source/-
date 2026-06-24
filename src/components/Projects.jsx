@@ -288,6 +288,7 @@ function VideoModal({ project, onClose }) {
           controls
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablePictureInPicture
+          muted
           autoPlay
           playsInline
           onContextMenu={(e) => e.preventDefault()}
