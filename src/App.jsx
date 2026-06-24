@@ -33,10 +33,10 @@ export default function App() {
             color3="#5e6578"
             timeSpeed={0.25}
             colorBalance={-0.38}
-            warpStrength={1.0}
-            warpFrequency={3.5}
+            warpStrength={0.35}
+            warpFrequency={2.2}
             warpSpeed={0.4}
-            warpAmplitude={50}
+            warpAmplitude={80}
             blendAngle={-8}
             blendSoftness={0.05}
             rotationAmount={500}
@@ -50,6 +50,7 @@ export default function App() {
             centerX={0}
             centerY={0}
             zoom={0.9}
+            randomBurst
           />
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>

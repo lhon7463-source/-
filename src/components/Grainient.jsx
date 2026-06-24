@@ -145,6 +145,7 @@ export default function Grainient({
   color2 = '#5227FF',
   color3 = '#B497CF',
   className = '',
+  randomBurst = false,
 }) {
   const containerRef = useRef(null)
 
@@ -215,8 +216,28 @@ export default function Grainient({
     let isVisible = true
     let isPageVisible = !document.hidden
     const t0 = performance.now()
+    // randomBurst: 动画只在随机时间窗口内推进，窗口之间 iTime 冻结
+    let virtualTime = 0
+    let burstUntil = 0
+    let nextBurstAt = 0
+    const pickInterval = () => 3 + Math.random() * 5   // 3~8s 间隔
+    const pickBurst = () => 1.2 + Math.random() * 1.8   // 1.2~3s 持续
+    nextBurstAt = performance.now() + pickInterval() * 1000
     const loop = t => {
-      program.uniforms.iTime.value = (t - t0) * 0.001
+      const realElapsed = (t - t0) * 0.001 - virtualTime
+      if (randomBurst) {
+        if (t >= nextBurstAt) {
+          virtualTime = (t - t0) * 0.001
+          burstUntil = t + pickBurst() * 1000
+          nextBurstAt = burstUntil + pickInterval() * 1000
+        }
+        if (t < burstUntil) {
+          virtualTime = (t - t0) * 0.001
+        }
+      } else {
+        virtualTime = (t - t0) * 0.001
+      }
+      program.uniforms.iTime.value = virtualTime * timeSpeed
       renderer.render({ scene: mesh })
       raf = requestAnimationFrame(loop)
     }

@@ -9,13 +9,12 @@ export default function About() {
         <div className="about-image-wrap">
           <GlitchText className="glitch-img" enableShadows={false}>
             <img
-              src="/avatar.png"
+              src="/image_00000.jpg"
               alt="陆鸿成"
               className="about-avatar"
               onError={e => { e.target.style.display = 'none' }}
             />
           </GlitchText>
-          <div className="about-image-glow" />
         </div>
 
         <div className="about-content">

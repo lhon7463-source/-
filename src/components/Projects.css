@@ -1,5 +1,30 @@
 .projects {
   padding: var(--space-32) 0;
+  position: relative;
+  isolation: isolate;
+}
+
+/* 柔化蒙版：降低精选项目区域背景颗粒的强度，自然过渡 */
+.projects::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    /* 顶部淡入：避免和 About 区域硬接 */
+    linear-gradient(
+      to bottom,
+      rgba(8, 8, 16, 0) 0%,
+      rgba(8, 8, 16, 0.18) 12%,
+      rgba(8, 8, 16, 0.4) 28%,
+      /* 中部峰值：柔化 Projects 中心 */
+      rgba(8, 8, 16, 0.45) 50%,
+      /* 底部淡出：避免和 Skills 区域硬接 */
+      rgba(8, 8, 16, 0.35) 75%,
+      rgba(8, 8, 16, 0.1) 92%,
+      rgba(8, 8, 16, 0) 100%
+    );
 }
 
 /* .section-tag 和 .section-title 由 index.css 全局接管 */
