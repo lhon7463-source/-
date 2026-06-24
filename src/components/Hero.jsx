@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import GlitchText from './GlitchText'
 import Threads from './Threads'
+import MetallicPaint from './MetallicPaint'
+import { buildNameMaskDataURL } from './nameMask'
 import './Hero.css'
 
 const NAV_ITEMS = [

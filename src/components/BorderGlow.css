@@ -1,0 +1,8 @@
+.border-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-glow-overlay {
+  /* styled inline via component */
+}

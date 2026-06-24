@@ -1,118 +1,109 @@
-import React from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import './BorderGlow.css'
 
+/**
+ * BorderGlow — emits a colored light bloom from the cursor position when
+ * the cursor is near the container's edge. Color cycles through `colors`
+ * while the cursor stays near the edge.
+ *
+ * Props match the React Bits / docx signature:
+ *   - edgeSensitivity: how close (px) the cursor must be to an edge to trigger
+ *   - glowColor: "R G B" string for the base light tint (mixed with colors[])
+ *   - backgroundColor: optional solid background fill
+ *   - borderRadius: rounded corner radius
+ *   - glowRadius: bloom radius in px
+ *   - glowIntensity: bloom alpha multiplier
+ *   - coneSpread: extra spread added to the bloom
+ *   - animated: whether the bloom itself drifts (auto)
+ *   - colors: cycle of accent colors for the bloom
+ */
 export default function BorderGlow({
   children,
+  edgeSensitivity = 30,
+  glowColor = '255 255 255',
+  backgroundColor,
+  borderRadius = 28,
+  glowRadius = 40,
+  glowIntensity = 1,
+  coneSpread = 25,
+  animated = false,
+  colors = ['#c084fc', '#f472b6', '#38bdf8'],
   className = '',
-  containerClassName = '',
-  borderWidth = 1.5,
-  glowRadius = 80,
-  glowIntensity = 0.4,
-  hoverIntensity = 0.9,
-  gradientColors = ['#4f7cff', '#7c3aed', '#4f7cff'],
-  animationSpeed = 4,
-  borderRadius = 14,
+  style = {},
 }) {
+  const containerRef = useRef(null)
+  const [pos, setPos] = useState({ x: -9999, y: -9999, active: false, colorIdx: 0 })
+  const colorIdxRef = useRef(0)
+  const lastEdgeHitRef = useRef(0)
+
+  const handleMove = useCallback((e) => {
+    const el = containerRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const distLeft = x
+    const distRight = rect.width - x
+    const distTop = y
+    const distBottom = rect.height - y
+    const minDist = Math.min(distLeft, distRight, distTop, distBottom)
+    const isInside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+    if (!isInside) {
+      setPos((p) => (p.active ? { ...p, active: false } : p))
+      return
+    }
+    if (minDist < edgeSensitivity) {
+      const now = performance.now()
+      if (now - lastEdgeHitRef.current > 220) {
+        lastEdgeHitRef.current = now
+        colorIdxRef.current = (colorIdxRef.current + 1) % colors.length
+      }
+    }
+    setPos({ x, y, active: true, colorIdx: colorIdxRef.current })
+  }, [edgeSensitivity, colors.length])
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    el.addEventListener('mousemove', handleMove)
+    el.addEventListener('mouseleave', () =>
+      setPos((p) => (p.active ? { ...p, active: false } : p))
+    )
+    return () => el.removeEventListener('mousemove', handleMove)
+  }, [handleMove])
+
+  const color = colors[pos.colorIdx] || colors[0]
+  const totalRadius = glowRadius + coneSpread
+
   return (
     <div
-      className={containerClassName}
+      ref={containerRef}
+      className={`border-glow ${className}`.trim()}
       style={{
         position: 'relative',
         borderRadius: `${borderRadius}px`,
-        isolation: 'isolate',
+        background: backgroundColor,
+        ...style,
       }}
     >
-      {/* 发光边框层 */}
       <div
-        style={{
-          position: 'absolute',
-          inset: `-${borderWidth}px`,
-          borderRadius: `${borderRadius + borderWidth}px`,
-          background: `conic-gradient(from var(--border-angle, 0deg), ${gradientColors.join(', ')}, ${gradientColors[0]})`,
-          mask: `radial-gradient(circle ${glowRadius}px at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 30%, black 100%)`,
-          WebkitMask: `radial-gradient(circle ${glowRadius}px at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 30%, black 100%)`,
-          opacity: glowIntensity,
-          transition: 'opacity 0.4s ease',
-          animation: `borderGlowSpin ${animationSpeed}s linear infinite`,
-          pointerEvents: 'none',
-          zIndex: -1,
-        }}
-        className="border-glow-layer"
-      />
-      {/* 静态边框 */}
-      <div
+        className="border-glow-overlay"
+        aria-hidden="true"
         style={{
           position: 'absolute',
           inset: 0,
           borderRadius: `${borderRadius}px`,
-          border: `${borderWidth}px solid rgba(79, 124, 255, 0.12)`,
           pointerEvents: 'none',
-          zIndex: -1,
-          transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+          opacity: pos.active ? glowIntensity : 0,
+          background: `radial-gradient(circle ${totalRadius}px at ${pos.x}px ${pos.y}px, ${color}, rgba(${glowColor}, 0) 70%)`,
+          mixBlendMode: 'screen',
+          transition: animated ? 'opacity 0.6s ease' : 'opacity 0.25s ease',
+          zIndex: 0,
         }}
-        className="border-glow-static"
       />
-      {children}
-      <style>{`
-        @property --border-angle {
-          syntax: '<angle>';
-          initial-value: 0deg;
-          inherits: false;
-        }
-        @keyframes borderGlowSpin {
-          to { --border-angle: 360deg; }
-        }
-        .border-glow-container:hover .border-glow-layer {
-          opacity: ${hoverIntensity} !important;
-        }
-        .border-glow-container:hover .border-glow-static {
-          border-color: rgba(79, 124, 255, 0.4) !important;
-          box-shadow: 0 0 20px rgba(79, 124, 255, 0.12) !important;
-        }
-      `}</style>
-    </div>
-  )
-}
-
-// 鼠标跟随 hook
-export function useBorderGlow(containerRef) {
-  React.useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-
-    const handleMouseMove = (e) => {
-      const rect = el.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width) * 100
-      const y = ((e.clientY - rect.top) / rect.height) * 100
-      el.style.setProperty('--mouse-x', `${x}%`)
-      el.style.setProperty('--mouse-y', `${y}%`)
-    }
-    const handleMouseLeave = () => {
-      el.style.setProperty('--mouse-x', '50%')
-      el.style.setProperty('--mouse-y', '50%')
-    }
-
-    el.addEventListener('mousemove', handleMouseMove)
-    el.addEventListener('mouseleave', handleMouseLeave)
-    el.style.setProperty('--mouse-x', '50%')
-    el.style.setProperty('--mouse-y', '50%')
-
-    return () => {
-      el.removeEventListener('mousemove', handleMouseMove)
-      el.removeEventListener('mouseleave', handleMouseLeave)
-    }
-  }, [containerRef])
-}
-
-// 封装好的带光效卡片
-export function GlowCard({ children, className = '', style = {}, ...props }) {
-  const ref = React.useRef(null)
-  useBorderGlow(ref)
-
-  return (
-    <div ref={ref} className={`border-glow-container ${className}`} style={style} {...props}>
-      <BorderGlow>
+      <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
         {children}
-      </BorderGlow>
+      </div>
     </div>
   )
 }

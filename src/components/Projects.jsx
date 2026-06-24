@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import PixelCard from './PixelCard'
+import BorderGlow from './BorderGlow'
 import './Projects.css'
 
 const projects = [
@@ -333,9 +334,19 @@ function ProjectCard({ project, onOpen }) {
           >
             <div className="card-tag">{project.tag}</div>
             <h3 className="card-title" style={{ textAlign: 'left' }}>{project.title}</h3>
-            <div className="card-video-wrap">
-              <ImageGallery images={project.images} />
-            </div>
+            <BorderGlow
+              className="card-media-glow"
+              borderRadius={12}
+              edgeSensitivity={36}
+              glowRadius={70}
+              glowIntensity={0.95}
+              coneSpread={30}
+              colors={['#c084fc', '#f472b6', '#38bdf8', '#fde68a']}
+            >
+              <div className="card-video-wrap">
+                <ImageGallery images={project.images} />
+              </div>
+            </BorderGlow>
             <div className="storyboard-strip" aria-hidden="true" />
           </div>
         </PixelCard>
@@ -354,13 +365,22 @@ function ProjectCard({ project, onOpen }) {
         >
           <div className="card-tag">{project.tag}</div>
           <h3 className="card-title">{project.title}</h3>
-          <div className="card-video-wrap">
-            {inView && (
-              <video
-                ref={videoRef}
-                src={project.video}
-                poster={project.poster}
-                className="card-video"
+          <BorderGlow
+            className="card-media-glow"
+            borderRadius={12}
+            edgeSensitivity={36}
+            glowRadius={70}
+            glowIntensity={0.95}
+            coneSpread={30}
+            colors={['#c084fc', '#f472b6', '#38bdf8', '#fde68a']}
+          >
+            <div className="card-video-wrap">
+              {inView && (
+                <video
+                  ref={videoRef}
+                  src={project.video}
+                  poster={project.poster}
+                  className="card-video"
                 muted
                 loop
                 playsInline
@@ -371,6 +391,7 @@ function ProjectCard({ project, onOpen }) {
               <span className="play-icon">▶</span>
             </div>
           </div>
+          </BorderGlow>
           <StoryboardStrip images={project.storyboards} />
         </div>
       </PixelCard>
